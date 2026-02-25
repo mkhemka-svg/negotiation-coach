@@ -72,6 +72,7 @@ export function generateStrategy(c) {
     concessionPlan: steps,
     nearRP,
     tips: styleTips[opponentStyle] || styleTips.collaborative,
-    warnings
+    warnings,
+    scripts
   };
 }
