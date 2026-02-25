@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Intake from "./pages/Intake";
 import Strategy from "./pages/Strategy";
+import Sim from "./pages/Sim";
 
 export default function App() {
   const [page, setPage] = useState("home");
@@ -22,6 +23,13 @@ export default function App() {
         >
           Strategy
         </button>
+        <button
+          onClick={() => setPage("sim")}
+          disabled={!activeCaseId}
+          title={!activeCaseId ? "Create a case first" : "Start simulation"}
+        >
+          Simulation
+        </button>
       </div>
 
       {page === "home" && (
@@ -35,8 +43,8 @@ export default function App() {
       )}
 
       {page === "intake" && <Intake nav={nav} />}
-
       {page === "strategy" && <Strategy nav={nav} />}
+      {page === "sim" && <Sim nav={nav} />}
     </div>
   );
 }
