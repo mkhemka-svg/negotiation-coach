@@ -5,16 +5,25 @@ import { initBot, botRespond } from "../logic/opponentBot";
 export default function Sim({ nav }) {
   const c = useMemo(() => getCaseById(nav.activeCaseId), [nav.activeCaseId]);
 
-  const [bot, setBot] = useState(() => initBot(c));
+  const [{ bot, rounds, log, ended }, setGame] = useState(() => {
+    const b = initBot(c);
+    return {
+      bot: b,
+      rounds: [],
+      ended: false,
+      log: [{ sender: "bot", text: `We propose ${b.botOffer}` }],
+    };
+  });
+
   const [userOffer, setUserOffer] = useState("");
-  const [ended, setEnded] = useState(false);
 
-  const [rounds, setRounds] = useState([]); // structured round history
-  const [log, setLog] = useState(() => [
-    { sender: "bot", text: `We propose ${bot.botOffer}` }
-  ]);
+  const roundLabel = useMemo(() => {
+    if (ended) return `Completed ${rounds.length}/${c.maxRounds}`;
+    const current = Math.min(rounds.length + 1, c.maxRounds);
+    return `Round ${current} of ${c.maxRounds}`;
+  }, [ended, rounds.length, c.maxRounds]);
 
-  function endAndSave(outcome, finalPrice = null) {
+  function endAndSave(outcome, finalPrice = null, finalRounds = rounds) {
     const run = {
       id: crypto.randomUUID(),
       caseId: c.id,
@@ -22,11 +31,17 @@ export default function Sim({ nav }) {
       outcome,
       finalPrice,
       botReservation: bot.botReservation,
-      rounds,
+      rounds: finalRounds,
     };
+
     saveRun(run);
     nav.setActiveRunId(run.id);
-    setEnded(true);
+
+    setGame((prev) => ({
+      ...prev,
+      ended: true,
+    }));
+
     nav.setPage("debrief");
   }
 
@@ -34,21 +49,29 @@ export default function Sim({ nav }) {
     if (ended) return;
 
     const offer = Number(userOffer);
-    if (!Number.isFinite(offer)) return;
+    if (!Number.isFinite(offer)) {
+      setGame((prev) => ({
+        ...prev,
+        log: [...prev.log, { sender: "system", text: "Enter a valid number." }],
+      }));
+      return;
+    }
 
-    // Check user walk-away (RP)
     const userAcceptable =
       c.role === "buyer" ? offer <= c.reservation : offer >= c.reservation;
 
-    const newLog = [...log, { sender: "you", text: `${offer}` }];
-
-    // If user violates their own RP, treat as "agreement trap" prevention:
     if (!userAcceptable) {
-      newLog.push({
-        sender: "system",
-        text: `That offer crosses your walk-away (RP). Try again or walk away.`,
-      });
-      setLog(newLog);
+      setGame((prev) => ({
+        ...prev,
+        log: [
+          ...prev.log,
+          { sender: "you", text: `${offer}` },
+          {
+            sender: "system",
+            text: "That crosses your walk-away (RP). Adjust or walk away.",
+          },
+        ],
+      }));
       setUserOffer("");
       return;
     }
@@ -64,55 +87,99 @@ export default function Sim({ nav }) {
     };
 
     const nextRounds = [...rounds, nextRound];
-    setRounds(nextRounds);
+
+    const nextLog = [
+      ...log,
+      { sender: "you", text: `${offer}` },
+      response.type === "ACCEPT"
+        ? { sender: "bot", text: response.message }
+        : { sender: "bot", text: `${response.message} (${response.offer})` },
+    ];
+
+    setGame((prev) => ({
+      ...prev,
+      rounds: nextRounds,
+      log: nextLog,
+    }));
+
+    setUserOffer("");
 
     if (response.type === "ACCEPT") {
-      newLog.push({ sender: "bot", text: response.message });
-      setLog(newLog);
-      setUserOffer("");
-      // Agreement at the accepted offer
-      endAndSave("AGREEMENT", offer);
+      endAndSave("AGREEMENT", offer, nextRounds);
       return;
-    } else {
-      newLog.push({ sender: "bot", text: `${response.message} (${response.offer})` });
-      setLog(newLog);
-      setUserOffer("");
     }
 
-    // Max rounds
     if (nextRounds.length >= c.maxRounds) {
-      newLog.push({ sender: "system", text: "Max rounds reached. Negotiation ended." });
-      setLog(newLog);
-      endAndSave("TIMEOUT", null);
+      endAndSave("TIMEOUT", null, nextRounds);
     }
   }
 
   function walkAway() {
     if (ended) return;
-    const newLog = [...log, { sender: "system", text: "You chose to walk away." }];
-    setLog(newLog);
-    endAndSave("WALKED", null);
+
+    setGame((prev) => ({
+      ...prev,
+      log: [...prev.log, { sender: "system", text: "You chose to walk away." }],
+      ended: true,
+    }));
+
+    endAndSave("WALKED", null, rounds);
   }
 
   return (
     <div style={{ marginTop: 20 }}>
       <h2>Simulation: {c.title}</h2>
 
-      <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
-        <div style={{ padding: 10, border: "1px solid #ddd", borderRadius: 10 }}>
-          <b>Your Target (TP):</b> {c.target} <br />
-          <b>Your Walk-away (RP):</b> {c.reservation} <br />
-          <b>Rounds:</b> {rounds.length}/{c.maxRounds}
+      {/* Stats Card */}
+      <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
+        <div
+          style={{
+            padding: 16,
+            borderRadius: 14,
+            backgroundColor: "#f3f4f6",
+            border: "1px solid #e5e7eb",
+            minWidth: 280,
+          }}
+        >
+          <div style={{ marginBottom: 6 }}>
+            <span style={{ fontWeight: 600, color: "#374151" }}>
+              Your Target (TP):
+            </span>{" "}
+            <span style={{ color: "#111827" }}>{c.target}</span>
+          </div>
+
+          <div style={{ marginBottom: 14 }}>
+            <span style={{ fontWeight: 600, color: "#374151" }}>
+              Your Walk-away (RP):
+            </span>{" "}
+            <span style={{ color: "#111827" }}>{c.reservation}</span>
+          </div>
+
+          <div
+            style={{
+              display: "inline-block",
+              padding: "6px 14px",
+              backgroundColor: "#2563eb",
+              color: "#ffffff",
+              borderRadius: 999,
+              fontWeight: 600,
+              fontSize: 14,
+              letterSpacing: 0.3,
+            }}
+          >
+            {roundLabel}
+          </div>
         </div>
       </div>
 
+      {/* Chat Log */}
       <div
         style={{
           border: "1px solid #ddd",
           padding: 12,
-          height: 260,
+          height: 280,
           overflowY: "auto",
-          marginTop: 12,
+          marginTop: 14,
           borderRadius: 10,
         }}
       >
@@ -123,8 +190,9 @@ export default function Sim({ nav }) {
         ))}
       </div>
 
+      {/* Controls */}
       {!ended && (
-        <div style={{ display: "flex", gap: 10, marginTop: 12, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
           <input
             value={userOffer}
             onChange={(e) => setUserOffer(e.target.value)}
