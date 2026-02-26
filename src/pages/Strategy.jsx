@@ -20,41 +20,41 @@ export default function Strategy({ nav }) {
     <div style={{ marginTop: 20 }}>
       <h2>Strategy: {c.title}</h2>
 
-      <div style={{ display: "grid", gap: 12, marginTop: 12 }}>
+      <div style={{ display: "grid", gap: 14, marginTop: 14 }}>
 
         {/* Anchor */}
-        <div style={{ padding: 12, border: "1px solid #ddd", borderRadius: 10 }}>
-          <h3>Recommended Opening Offer (Anchor)</h3>
-          <p style={{ fontSize: 22, margin: 0 }}>
+        <div style={{ padding: 14, border: "1px solid #ddd", borderRadius: 10 }}>
+          <h3 style={{ marginTop: 0 }}>Recommended Opening Offer (Anchor)</h3>
+          <div style={{ fontSize: 24 }}>
             <b>{s.anchor}</b>
-          </p>
-          <p style={{ opacity: 0.8, marginTop: 8 }}>
+          </div>
+          <div style={{ fontSize: 13, opacity: 0.75, marginTop: 6 }}>
             Precise anchors can strongly influence final outcomes.
-          </p>
+          </div>
         </div>
 
         {/* Concession Plan */}
-        <div style={{ padding: 12, border: "1px solid #ddd", borderRadius: 10 }}>
-          <h3>Concession Plan</h3>
+        <div style={{ padding: 14, border: "1px solid #ddd", borderRadius: 10 }}>
+          <h3 style={{ marginTop: 0 }}>Concession Plan</h3>
           <ol>
             {s.concessionPlan.map((x, i) => (
               <li key={i}>{x}</li>
             ))}
           </ol>
-          <p style={{ opacity: 0.8 }}>
+          <div style={{ fontSize: 13, opacity: 0.75 }}>
             Near walk-away option (only if absolutely necessary): <b>{s.nearRP}</b>
-          </p>
+          </div>
         </div>
 
         {/* Tactics */}
-        <div style={{ padding: 12, border: "1px solid #ddd", borderRadius: 10 }}>
-          <h3>Tactics (based on opponent style)</h3>
-          <p>{s.tips}</p>
+        <div style={{ padding: 14, border: "1px solid #ddd", borderRadius: 10 }}>
+          <h3 style={{ marginTop: 0 }}>Tactics (based on opponent style)</h3>
+          <p style={{ margin: 0 }}>{s.tips}</p>
         </div>
 
         {/* Scripts */}
-        <div style={{ padding: 12, border: "1px solid #ddd", borderRadius: 10 }}>
-          <h3>Scripts you can use</h3>
+        <div style={{ padding: 14, border: "1px solid #ddd", borderRadius: 10 }}>
+          <h3 style={{ marginTop: 0 }}>Scripts you can use</h3>
           <ul>
             {(s.scripts || []).map((line, i) => (
               <li key={i}>{line}</li>
@@ -64,9 +64,19 @@ export default function Strategy({ nav }) {
 
         {/* Warnings */}
         {s.warnings && s.warnings.length > 0 && (
-          <div style={{ padding: 12, background: "#fff3cd", borderRadius: 10 }}>
-            <h3>Warnings</h3>
-            <ul>
+          <div
+            style={{
+              padding: 14,
+              backgroundColor: "#ffe9e9",
+              border: "1px solid #ff4d4f",
+              borderRadius: 10,
+              color: "#7a0000",
+              fontWeight: 500,
+              lineHeight: 1.5
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>⚠️ Warnings</h3>
+            <ul style={{ marginBottom: 0 }}>
               {s.warnings.map((w, i) => (
                 <li key={i}>{w}</li>
               ))}
