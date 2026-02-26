@@ -1,16 +1,33 @@
-# React + Vite
+# Negotiation Coach
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web app that helps users prepare for single-issue negotiations by:
+1) collecting key negotiation inputs (Target, Walk-away/Reservation Point, BATNA),
+2) generating a strategy (anchoring offer + concession plan + scripts),
+3) letting users practice via an interactive negotiation simulator,
+4) saving runs and showing a debrief with scoring + an offer-history chart.
 
-Currently, two official plugins are available:
+## Live Demo
+- App: <https://negotiation-coach-ten.vercel.app>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How to Use
+1. Click **New Case** and enter your negotiation info (TP, RP, BATNA).
+2. View the **Strategy** page for an opening offer, concession plan, and scripts.
+3. Click **Start Simulation** to practice negotiating with a rule-based opponent.
+4. After the simulation ends, review the **Debrief** (score + offer chart).
+5. Use **History** to revisit past cases and runs.
 
-## React Compiler
+## Features I’m Proud Of
+- **Strategy engine** grounded in negotiation principles (BATNA/RP/TP, anchoring, concessions, agreement-trap warnings).
+- **Interactive simulator** with turn-based offers, walk-away logic and round limits.
+- **Data visualization**: Offer-history chart comparing user vs bot offers.
+- **Persistence**: Cases + runs saved locally (localStorage “database”).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
+- React + Vite
+- Chart.js (react-chartjs-2)
+- localStorage for persistence (no external APIs)
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Run Locally
+```bash
+npm install
+npm run dev
