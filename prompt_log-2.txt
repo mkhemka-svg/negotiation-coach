@@ -1,0 +1,79 @@
+﻿AI Tools/Models Used:
+* ChatGPT 
+
+
+Overview:
+
+
+Built a React/Vite web app that generates negotiation strategy and simulates a negotiation. 
+
+
+Used AI for scaffolding, then manually edited + debugged and wrote key logic.
+
+
+[Session 1: 90 min]
+Goal: project setup + intake
+Key Prompts used:
+* Give step-by-step setup for Vite React app
+* Create intake form fields for BATNA/RP/TP and validation
+What I did myself:
+* Created repo, ran Vite setup, fixed npm/node issues
+* Created folder structure
+* Implemented/edited Intake.jsx validation and tested flows
+Key files touched:
+* src/App.jsx
+* src/pages/Intake.jsx
+* src/db/storage.js
+Bugs:
+* Fixed localhost/Safari connect issues
+
+
+[Session 2: 60 min]
+Goal: strategy engine + strategy UI
+Key Prompts used:
+* Create rule-based strategy engine (anchoring + concessions + warnings)
+* Generate Strategy.jsx UI
+What I did myself:
+* Modified strategyEngine return values (added scripts)
+* Fixed warning UI contrast and spacing
+Key files:
+* src/logic/strategyEngine.js
+* src/pages/Strategy.jsx
+
+
+[Session 3: 90 min]
+Goal: simulator + opponent bot
+Key Prompts used:
+* Create opponent bot and simulation page
+* Make rounds update properly
+What I did myself:
+* Debugged state issues, ensured rounds increment, RP enforcement
+* Improved UI readability for round badge
+Key files:
+* src/logic/opponentBot.js
+* src/pages/Sim.jsx
+
+
+[Session 4: 90 min]
+Goal: persistence of runs + debrief + charts + history
+Key Prompts used:
+* Add run storage and debrief scoring
+* Improve offer history chart with different colors and correct, accurate data
+What I did myself:
+* Fixed export/import errors in storage.js
+* Verified chart displays correctly and tested edge cases
+Key files:
+* src/pages/Debrief.jsx
+* src/pages/History.jsx
+* src/components/OfferChart.jsx
+* src/logic/scoring.js
+* src/db/storage.js
+
+
+[Session 5: 60 min]
+Goal: deployment + README + polish
+Key Prompts used:
+* Give a deployment checklist for Vercel/GitHub Pages
+What I did myself:
+* Deployed app, verified public URL
+* Wrote README and final testing
